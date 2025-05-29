@@ -25,7 +25,7 @@ function displayArtworks(artworks) {
 
 // Fetch 1
 function loadInitialArt() {
-    fetch("https://api.artic.edu/api/v1/artworks?page=3&limit=12")
+    fetch("https://api.artic.edu/api/v1/artworks?page=5&limit=12")
         .then(respond => respond.json())
         .then(data => {
             displayArtworks(data.data);
@@ -43,7 +43,7 @@ function handleSearch() {
 
     gallery.innerHTML = "<p>Searching...</p>";
 
-    fetch(`https://api.artic.edu/api/v1/artworks/search?q=${encodeURIComponent(query)}&limit=9`)
+    fetch(`https://api.artic.edu/api/v1/artworks/search?q=${encodeURIComponent(query)}&limit=12`)
         .then(respond => respond.json())
         .then(data => {
             const ids = data.data.map(item => item.id);
