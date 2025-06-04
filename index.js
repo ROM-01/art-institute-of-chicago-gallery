@@ -4,6 +4,14 @@ const gallery = document.querySelector(".gallery-wrapper");
 
 const DEFAULT_IMAGE = "/images/coming-soon.jpg";
 
+let currentPage = 1;
+const ITEMS_PER_PAGE = 12;
+let currentSearchQuery = ""; // for tracking search mode
+
+const prevBtn = document.getElementById("prev-btn");
+const nextBtn = document.getElementById("next-btn");
+const pageIndicator = document.getElementById("page-indicator");
+
 function displayArtworks(artworks) {
     gallery.innerHTML = "";
 
@@ -23,12 +31,12 @@ function displayArtworks(artworks) {
     });
 }
 
-// Fetch 1
-function loadInitialArt() {
-    fetch("https://api.artic.edu/api/v1/artworks?page=5&limit=12")
+function loadInitialArt(page = 1) {
+    fetch(`https://api.artic.edu/api/v1/artworks?page=${page}&limit=${ITEMS_PER_PAGE}`)
         .then(respond => respond.json())
         .then(data => {
             displayArtworks(data.data);
+            pageIndicator.textContent = `Page ${currentPage}`;
         })
         .catch(error => {
             gallery.innerHTML = "<p>Error loading artwork.</p>";
@@ -36,14 +44,14 @@ function loadInitialArt() {
         });
 }
 
-// Week 14 Second Fetch: Search Feature
-function handleSearch() {
+function handleSearch(page = 1) {
     const query = input.value.trim();
     if (!query) return;
 
     gallery.innerHTML = "<p>Searching...</p>";
+    currentSearchQuery = query;
 
-    fetch(`https://api.artic.edu/api/v1/artworks/search?q=${encodeURIComponent(query)}&limit=12`)
+    fetch(`https://api.artic.edu/api/v1/artworks/search?q=${encodeURIComponent(query)}&limit=${ITEMS_PER_PAGE}&page=${page}`)
         .then(respond => respond.json())
         .then(data => {
             const ids = data.data.map(item => item.id);
@@ -57,6 +65,7 @@ function handleSearch() {
         .then(respond => respond.json())
         .then(data => {
             displayArtworks(data.data);
+            pageIndicator.textContent = `Page ${currentPage}`;
         })
         .catch(err => {
             gallery.innerHTML = "<p>Error fetching search results.</p>";
@@ -64,6 +73,31 @@ function handleSearch() {
         });
 }
 
-btn.addEventListener("click", handleSearch);
+
+btn.addEventListener("click", () => {
+    currentPage = 1;
+    handleSearch(currentPage);
+});
+
+nextBtn.addEventListener("click", () => {
+    currentPage++;
+    if (currentSearchQuery) {
+        handleSearch(currentPage);
+    } else {
+        loadInitialArt(currentPage);
+    }
+});
+
+prevBtn.addEventListener("click", () => {
+    if (currentPage > 1) {
+        currentPage--;
+        if (currentSearchQuery) {
+            handleSearch(currentPage);
+        } else {
+            loadInitialArt(currentPage);
+        }
+    }
+});
+
 
 loadInitialArt();
