@@ -126,7 +126,7 @@ h2 {
     cursor: pointer;
 }
 
-@media screen and (max-height:700px) {
+@media screen and (max-width:1000px) {
     h1 {
         font-size: 2rem;
     }
